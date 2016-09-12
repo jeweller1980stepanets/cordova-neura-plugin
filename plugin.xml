@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-neura" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+	<name>neura</name>
+	<js-module name="neura" src="www/neura.js">
+		<clobbers target="neura" />
+	</js-module>
+	<platform name="android">
+		<config-file parent="/*" target="res/xml/config.xml">
+			<feature name="neura">
+				<param name="android-package" value="com.neura.cordova.plugin.neura" />
+			</feature>
+		</config-file>
+		<config-file parent="/*" target="AndroidManifest.xml"/>
+		<source-file src="src/android/neura.java" target-dir="src/com/neura/cordova/plugin" />
+		
+		<framework src="com.theneura:android-sdk:+" />
+	</platform>
+</plugin>

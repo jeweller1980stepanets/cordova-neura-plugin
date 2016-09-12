@@ -1,0 +1,17 @@
+{
+  "name": "neura",
+  "version": "0.0.1",
+  "description": "Cordova Neura Plugin",
+  "cordova": {
+    "id": "cordova-plugin-neura",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "Neura",
+  "license": "ISC"
+}
