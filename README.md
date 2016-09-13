@@ -17,7 +17,5 @@ To run the sample app please follow these steps:
 2. cd to the sample app folder
 3. Add the cordova-neura-plugin as described in the installation section above
 4. [Optional - only if push notifications for Neura events are required] Add the <a href="https://github.com/phonegap/phonegap-plugin-push">phonegap-plugin-push</a> to the sample app as described on its <a href="https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md">installation guide</a>
-5. run the following commands:
-
-    cordova platforms add android
-    cordova run android
+5. run `cordova platforms add android`
+6. run `cordova run android`
