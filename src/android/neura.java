@@ -689,8 +689,25 @@ public class neura extends CordovaPlugin {
         }, timestamp);
     }
 
-    private JSONObject convertSituationToJson(SubSituationData subSituationData) {
-        return null;
+    private JSONObject convertSituationToJson(SubSituationData subSituationData) throws JSONException {
+        // TODO: Update convertSituationToJson to use SubSituationData.toJson once implemented
+        JSONObject subSituationDataJson = new JSONObject();
+        if (subSituationData != null) {
+            subSituationDataJson.put("startTimestamp", subSituationData.getStartTimestamp());
+            subSituationDataJson.put("activity", subSituationData.getActivity());
+            subSituationDataJson.put("state", subSituationData.getState());
+
+            if (subSituationData.getPlace() != null) {
+                JSONObject subSituationDataPlaceJson = new JSONObject();
+                subSituationDataPlaceJson.put("nearby", subSituationData.getPlace().getNearby());
+                subSituationDataPlaceJson.put("semanticName", subSituationData.getPlace().getSemanticName());
+                subSituationDataPlaceJson.put("semanticType", subSituationData.getPlace().getSemanticType());
+
+                subSituationDataJson.put("place", subSituationDataPlaceJson);
+            }
+        }
+
+        return subSituationDataJson;
     }
 
     private void simulateAnEvent(JSONArray args, CallbackContext callbackContext) {
