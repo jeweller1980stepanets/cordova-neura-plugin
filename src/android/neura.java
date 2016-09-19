@@ -535,22 +535,22 @@ public class neura extends CordovaPlugin {
         callbackContext.success(Boolean.toString(hasDeviceWithCapability));
     }
 
-    private void addDevice(@SuppressWarnings("UnusedParameters") JSONArray args, CallbackContext callbackContext) {
+    private void addDevice(@SuppressWarnings("UnusedParameters") JSONArray args, final CallbackContext callbackContext) {
         boolean addDeviceReturnValue = mNeuraApiClient.addDevice(new PickerCallback() {
             @Override
             public void onResult(boolean success) {
                 Log.d(TAG, "addDevice.PickerCallback.onResult() called with: " + "success = [" + success + "]");
+
+                callbackContext.success(Boolean.toString(success));
             }
         });
 
-        if (addDeviceReturnValue) {
-            callbackContext.success(Boolean.toString(addDeviceReturnValue));
-        } else {
+        if (!addDeviceReturnValue) {
             callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
         }
     }
 
-    private void addDeviceByCapabilities(JSONArray deviceCapabilityNames, CallbackContext callbackContext) {
+    private void addDeviceByCapabilities(JSONArray deviceCapabilityNames, final CallbackContext callbackContext) {
         ArrayList<String> deviceCapabilityNamesArrayList = new ArrayList<String>();
         if (deviceCapabilityNames != null && deviceCapabilityNames.length() > 0) {
             for (int i = 0; i < deviceCapabilityNames.length(); i++) {
@@ -570,17 +570,17 @@ public class neura extends CordovaPlugin {
             @Override
             public void onResult(boolean success) {
                 Log.d(TAG, "addDeviceByCapabilities.PickerCallback.onResult() called with: " + "success = [" + success + "]");
+
+                callbackContext.success(Boolean.toString(success));
             }
         });
 
-        if (addDeviceReturnValue) {
-            callbackContext.success(Boolean.toString(addDeviceReturnValue));
-        } else {
+        if (!addDeviceReturnValue) {
             callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
         }
     }
 
-    private void addDeviceByName(JSONArray args, CallbackContext callbackContext) {
+    private void addDeviceByName(JSONArray args, final CallbackContext callbackContext) {
         String deviceName;
         try {
             deviceName = args.getString(0);
@@ -596,12 +596,12 @@ public class neura extends CordovaPlugin {
             @Override
             public void onResult(boolean success) {
                 Log.d(TAG, "addDeviceByName.PickerCallback.onResult() called with: " + "success = [" + success + "]");
+
+                callbackContext.success(Boolean.toString(success));
             }
         });
 
-        if (addDeviceReturnValue) {
-            callbackContext.success(Boolean.toString(addDeviceReturnValue));
-        } else {
+        if (!addDeviceReturnValue) {
             callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
         }
     }
