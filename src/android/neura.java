@@ -13,11 +13,11 @@ import com.neura.resources.authentication.AuthenticateCallback;
 import com.neura.resources.authentication.AuthenticateData;
 import com.neura.resources.data.PickerCallback;
 import com.neura.resources.device.Capability;
+import com.neura.resources.device.Device;
 import com.neura.resources.device.DevicesRequestCallback;
 import com.neura.resources.device.DevicesResponseData;
 import com.neura.resources.situation.SituationCallbacks;
 import com.neura.resources.situation.SituationData;
-import com.neura.resources.situation.SubSituationData;
 import com.neura.resources.user.UserDetails;
 import com.neura.resources.user.UserDetailsCallbacks;
 import com.neura.resources.user.UserPhone;
@@ -36,7 +36,6 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,9 +92,6 @@ public class neura extends CordovaPlugin {
                 return true;
             } else if (action.equals("enableNeuraHandingStateAlertMessages")) {
                 this.enableNeuraHandingStateAlertMessages(args, callbackContext);
-                return true;
-            } else if (action.equals("sendLog")) {
-                this.sendLog(args, callbackContext);
                 return true;
             } else if (action.equals("getSdkVersion")) {
                 this.getSdkVersion(args, callbackContext);
@@ -433,12 +429,6 @@ public class neura extends CordovaPlugin {
         }
     }
 
-    private void sendLog(@SuppressWarnings("UnusedParameters") JSONArray args, CallbackContext callbackContext) {
-        mNeuraApiClient.sendLog(cordova.getActivity());
-
-        callbackContext.success();
-    }
-
     private void getSdkVersion(@SuppressWarnings("UnusedParameters") JSONArray args, CallbackContext callbackContext) {
         String sdkVersion = mNeuraApiClient.getSdkVersion();
 
@@ -490,12 +480,11 @@ public class neura extends CordovaPlugin {
             @Override
             public void onSuccess(DevicesResponseData devicesResponseData) {
                 JSONArray devicesJsonArray = new JSONArray();
-//                if (devicesResponseData != null) {
-//                    // TODO: Uncomment getKnownDevices iteration of devices response after added to proguard keep
-//                    for (Device currDevice  : devicesResponseData.getDevices()) {
-//                        devicesJsonArray.put(currDevice.toJson());
-//                    }
-//                }
+                if (devicesResponseData != null) {
+                    for (Device currDevice : devicesResponseData.getDevices()) {
+                        devicesJsonArray.put(currDevice.toJson());
+                    }
+                }
                 callbackContext.success(devicesJsonArray);
             }
 
@@ -610,20 +599,7 @@ public class neura extends CordovaPlugin {
         mNeuraApiClient.getUserDetails(new UserDetailsCallbacks() {
             @Override
             public void onSuccess(UserDetails userDetails) {
-                // TODO: Replace with toJson of UserDetails when added
-                JSONObject userDetailsJson = new JSONObject();
-                try {
-                    userDetailsJson.put("email", userDetails.getData().getEmail());
-                    userDetailsJson.put("image", userDetails.getData().getImageUrl());
-                    userDetailsJson.put("name", userDetails.getData().getName());
-                    userDetailsJson.put("neuraId", userDetails.getData().getNeuraId());
-
-                    callbackContext.success(userDetailsJson);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-
-                    callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
-                }
+                callbackContext.success(userDetails.toJson());
             }
 
             @Override
@@ -667,19 +643,7 @@ public class neura extends CordovaPlugin {
         mNeuraApiClient.getUserSituation(new SituationCallbacks() {
             @Override
             public void onSuccess(SituationData situationData) {
-                // TODO: Replace with toJson of SituationData when added
-                JSONObject situationDataJson = new JSONObject();
-                try {
-                    situationDataJson.put("currentSituation", convertSituationToJson(situationData.getCurrentSituation()));
-                    situationDataJson.put("followingSituation", convertSituationToJson(situationData.getFollowingSituation()));
-                    situationDataJson.put("previousSituation", convertSituationToJson(situationData.getPreviousSituation()));
-                    situationDataJson.put("timestamp", situationData.getSituationTimestamp());
-                    callbackContext.success(situationDataJson);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-
-                    callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
-                }
+                callbackContext.success(situationData.toJson());
             }
 
             @Override
@@ -689,28 +653,7 @@ public class neura extends CordovaPlugin {
         }, timestamp);
     }
 
-    private JSONObject convertSituationToJson(SubSituationData subSituationData) throws JSONException {
-        // TODO: Update convertSituationToJson to use SubSituationData.toJson once implemented
-        JSONObject subSituationDataJson = new JSONObject();
-        if (subSituationData != null) {
-            subSituationDataJson.put("startTimestamp", subSituationData.getStartTimestamp());
-            subSituationDataJson.put("activity", subSituationData.getActivity());
-            subSituationDataJson.put("state", subSituationData.getState());
-
-            if (subSituationData.getPlace() != null) {
-                JSONObject subSituationDataPlaceJson = new JSONObject();
-                subSituationDataPlaceJson.put("nearby", subSituationData.getPlace().getNearby());
-                subSituationDataPlaceJson.put("semanticName", subSituationData.getPlace().getSemanticName());
-                subSituationDataPlaceJson.put("semanticType", subSituationData.getPlace().getSemanticType());
-
-                subSituationDataJson.put("place", subSituationDataPlaceJson);
-            }
-        }
-
-        return subSituationDataJson;
-    }
-
-    private void simulateAnEvent(JSONArray args, CallbackContext callbackContext) {
+    private void simulateAnEvent(@SuppressWarnings("UnusedParameters") JSONArray args, CallbackContext callbackContext) {
         if (!mNeuraApiClient.simulateAnEvent()) {
             callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
         }

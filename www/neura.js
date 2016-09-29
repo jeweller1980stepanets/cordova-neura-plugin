@@ -52,10 +52,6 @@ exports.enableNeuraHandingStateAlertMessages = function(enableNeuraHandingStateA
     exec(success, error, "neura", "enableNeuraHandingStateAlertMessages", [enableNeuraHandingStateAlertMessages]);
 };
 
-exports.sendLog = function(success, error) {
-    exec(success, error, "neura", "sendLog", []);
-};
-
 exports.getSdkVersion = function(success, error) {
     exec(success, error, "neura", "getSdkVersion", []);
 };
