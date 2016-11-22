@@ -36,6 +36,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,8 +152,9 @@ public class neura extends CordovaPlugin {
                 mNeuraApiClient = builder.build();
 
                 try {
-                    String appUid = args.getString(0);
-                    String appSecret = args.getString(1);
+                    final JSONObject params = args.getJSONObject(0);
+                    String appUid = params.optString("appUid", null);
+                    String appSecret = params.optString("appSecret", null);
 
                     if (appUid == null || appSecret == null) {
                         Log.e(TAG, "init: invalid app UID or app secret");
@@ -181,10 +183,28 @@ public class neura extends CordovaPlugin {
         });
     }
 
-    private void authenticate(final JSONArray permissions, final CallbackContext callbackContext) {
+    private void authenticate(final JSONArray args, final CallbackContext callbackContext) {
         cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
+                if (args == null)
+                {
+                    Log.e(TAG, "authenticate: args are null");
+
+                    callbackContext.error(ERROR_CODE_INVALID_ARGS);
+                    return;
+                }
+
+                JSONObject params = args.optJSONObject(0);
+                if (params == null)
+                {
+                    Log.e(TAG, "authenticate: params are null");
+
+                    callbackContext.error(ERROR_CODE_INVALID_ARGS);
+                    return;
+                }
+
+                JSONArray permissions = params.optJSONArray("permissions");
                 if (permissions == null || permissions.length() == 0) {
                     Log.e(TAG, "authenticate: permissions are null or empty");
 
@@ -207,6 +227,13 @@ public class neura extends CordovaPlugin {
                     }
 
                     authenticationRequest.setPermissions(permissionsArrayList);
+
+                    String phone = params.optString("phone", null);
+                    if (phone != null) {
+                        authenticationRequest.setPhone(phone);
+                    }
+
+                    Log.d(TAG, "authenticate() called with permissions = [" + permissions + "], phone = [" + phone + "]");
 
                     mNeuraApiClient.authenticate(authenticationRequest, new AuthenticateCallback() {
                         @Override
