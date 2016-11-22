@@ -1,11 +1,11 @@
 var exec = require('cordova/exec');
 
-exports.init = function(appUid, appSecret, success, error) {
-    exec(success, error, "neura", "init", [appUid, appSecret]);
+exports.init = function(params, success, error) {
+    exec(success, error, "neura", "init", [params]);
 };
 
-exports.authenticate = function(permissionsArray, success, error) {
-    exec(success, error, "neura", "authenticate", permissionsArray);
+exports.authenticate = function(params, success, error) {
+    exec(success, error, "neura", "authenticate", [params]);
 };
 
 exports.forgetMe = function(showAreYouSureDialog, success, error) {
