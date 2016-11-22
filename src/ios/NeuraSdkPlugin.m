@@ -3,7 +3,7 @@
 #import <NeuraSDK/NeuraSDK.h>
 #import <NeuraSDK/NeuraSDKPushNotification.h>
 
-#define NEURA_SDK_PLUGIN_LOG_ENABLED 1
+//#define NEURA_SDK_PLUGIN_LOG_ENABLED 1
 
 const NSInteger kNeuraSdkError_Unknown              = -1;
 const NSInteger kNeuraSdkError_Invalid_Arguments    = -2;
