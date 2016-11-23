@@ -28,8 +28,8 @@ To run the sample app please follow these steps:
 Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the framework is distributed separately from the plugin, please perform following steps to set up the environment correctly.
 
 1. Download <a href="https://github.com/NeuraLabs/cordova-neura-plugin.git">Neura Cordova Plugin</a>
-2. Download <a href="https://dev.theneura.com/docs/guide/ios/setup">Neura SDK framework</a> and unzip the content.
-3. Copy 'NeuraSDK.framework' from 'Release-universal' folder to previously downloaded 'path/to/cordova-neura-plugin/' folder.
+2. Download <a href="https://dev.theneura.com/docs/guide/ios/setup">Neura SDK framework</a> and unzip the contents.
+3. Copy 'NeuraSDK.framework' from the 'Release-universal' folder to previously downloaded 'path/to/cordova-neura-plugin/' folder.
 4. Download <a href="https://github.com/NeuraLabs/NeuraSampleCordova.git">NeuraSampleCordova application</a>.
 5. cd to application folder
 6. Add iOS platform to the application: 
@@ -41,7 +41,7 @@ Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the f
 9. Build cordova project (--verbose can be omitted here): 
  	'cordova build ios --verbose'
 10. Change Sample app project's Info.plist (NeuraSampleCordova-Info.plist). 
-	It can be done by altering the appropriate plist file or via xCode 'Info' tab of the 'NeuraSampleCordova' target.
+	This can be done by altering the appropriate plist file or via xCode 'Info' tab of the 'NeuraSampleCordova' target.
 	
 	I. Add Privacy related items:
 	  a. Privacy - Motion Usage Description
@@ -74,5 +74,5 @@ Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the f
 
 11. Open xcode project 'path/to/NeuraSampleCordova/platforms/ios/NeuraSampleCordova.xcworkspace'
 12. Select appropriate signing team.
-13. In case the Push Notification usage (including NeuraSDK automatic Push Notification functionality), go to the 'Capabilities' tab of the 'NeuraSampleCordova' target and turn on 'Push Notification' capability.
+13. If you plan on using Push Notification functionality (including NeuraSDK automatic Push Notification functionality), go to the 'Capabilities' tab of the 'NeuraSampleCordova' target and turn on 'Push Notification' capability.
 
