@@ -32,13 +32,13 @@ Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the f
 3. Copy 'NeuraSDK.framework' from 'Release-universal' folder to previously downloaded 'path/to/cordova-neura-plugin/' folder.
 4. Download <a href="https://github.com/NeuraLabs/NeuraSampleCordova.git">NeuraSampleCordova application</a>.
 5. cd to application folder
-6. Add iOS platform to the application - 
+6. Add iOS platform to the application: 
 	'cordova platform add ios'
-7. Install 'xcode' package via 'npm' for that application (necessary for correct xcode project setup)
+7. Install 'xcode' package via 'npm' for that application (necessary for correct xcode project setup):
 	'npm i xcode'
 8. Add previously fetched plugin (local installation):
 	'cordova plugin add /path/to/cordova-neura-plugin/'
-9. Build cordova project (--verbose can be omitted here) 
+9. Build cordova project (--verbose can be omitted here): 
  	'cordova build ios --verbose'
 10. Change Sample app project's Info.plist (NeuraSampleCordova-Info.plist). 
 	It can be done by altering the appropriate plist file or via xCode 'Info' tab of the 'NeuraSampleCordova' target.
