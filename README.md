@@ -23,18 +23,25 @@ To run the sample app please follow these steps:
 5. run `cordova platforms add android`
 6. run `cordova run android`
 
-## iOS
+## iOS - plugin integration into sample application
 
-1. Add iOS platform to the application - 
+Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the framework is distributed separately from the plugin, please perform following steps to set up the environment correctly.
+
+1. Download <a href="https://github.com/NeuraLabs/cordova-neura-plugin.git">Neura Cordova Plugin</a>
+2. Download <a href="https://dev.theneura.com/docs/guide/ios/setup">Neura SDK framework</a> and unzip the content.
+3. Copy 'NeuraSDK.framework' from 'Release-universal' folder to previously downloaded 'path/to/cordova-neura-plugin/' folder.
+4. Download <a href="https://github.com/NeuraLabs/NeuraSampleCordova.git">NeuraSampleCordova application</a>.
+5. cd to application folder
+6. Add iOS platform to the application - 
 	'cordova platform add ios'
-2. Install 'xcode' package via 'npm'
+7. Install 'xcode' package via 'npm' for that application (necessary for correct xcode project setup)
 	'npm i xcode'
-3. Download <a href="https://dev.theneura.com/docs/guide/ios/setup">NeuraSDK.framework</a> and unzip the content.
-4. Copy 'NeuraSDK.framework' from 'Release-universal' folder to 'path/to/cordova-plugin-neura/' folder.
-5. Build cordova project - 
+8. Add previously fetched plugin (local installation):
+	'cordova plugin add /path/to/cordova-neura-plugin/'
+9. Build cordova project (--verbose can be omitted here) 
  	'cordova build ios --verbose'
-6. Change Sample app project's Info.plist (NeuraSampleCordova-Info.plist). 
-	It can be done by altering the appropriate plist file or via xCode.
+10. Change Sample app project's Info.plist (NeuraSampleCordova-Info.plist). 
+	It can be done by altering the appropriate plist file or via xCode 'Info' tab of the 'NeuraSampleCordova' target.
 	
 	I. Add Privacy related items:
 		a. Privacy - Motion Usage Description
@@ -42,7 +49,6 @@ To run the sample app please follow these steps:
 		c. Privacy - Location Always Usage Description
 
 		In plist format:
-
 	    <key>NSBluetoothPeripheralUsageDescription</key>
 	    <string>This enables more accurate detection of activity and significant places.</string>
 	    <key>NSLocationAlwaysUsageDescription</key>
@@ -57,7 +63,6 @@ To run the sample app please follow these steps:
 		d. "bluetooth-central"
 
 		In plist format:
-
 	   	<key>UIBackgroundModes</key>
 	   	<array>
       	    <string>fetch</string>
@@ -67,7 +72,7 @@ To run the sample app please follow these steps:
     	</array>
 
 
-7. Open xcode project 'path/to/NeuraSampleCordova/platforms/ios/NeuraSampleCordova.xcworkspace'
-8. Select appropriate signing team.
-9. In case the NeuraSDK Automatic Push Notification functionality should be used, go to the 'Capabilities' tab of the 'NeuraSampleCordova' target and turn on 'Push Notification' capability.
+11. Open xcode project 'path/to/NeuraSampleCordova/platforms/ios/NeuraSampleCordova.xcworkspace'
+12. Select appropriate signing team.
+13. In case the Push Notification usage (including NeuraSDK automatic Push Notification functionality), go to the 'Capabilities' tab of the 'NeuraSampleCordova' target and turn on 'Push Notification' capability.
 
