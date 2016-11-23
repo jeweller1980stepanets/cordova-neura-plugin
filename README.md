@@ -44,9 +44,9 @@ Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the f
 	It can be done by altering the appropriate plist file or via xCode 'Info' tab of the 'NeuraSampleCordova' target.
 	
 	I. Add Privacy related items:
-		a. Privacy - Motion Usage Description
-		b. Privacy - Bluetooth Peripheral Usage Description
-		c. Privacy - Location Always Usage Description
+	  a. Privacy - Motion Usage Description
+	  b. Privacy - Bluetooth Peripheral Usage Description
+	  c. Privacy - Location Always Usage Description
 
 		In plist format:
 	    <key>NSBluetoothPeripheralUsageDescription</key>
@@ -57,10 +57,10 @@ Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the f
 	    <string>Motion data is required to provide a better experience</string>
 
 	II. Add background modes:
-		a. "fetch"
-		b. "location"
-		c. "remote-notification"
-		d. "bluetooth-central"
+	  a. "fetch"
+	  b. "location"
+	  c. "remote-notification"
+	  d. "bluetooth-central"
 
 		In plist format:
 	   	<key>UIBackgroundModes</key>
