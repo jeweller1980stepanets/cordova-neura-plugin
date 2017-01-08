@@ -103,3 +103,23 @@ exports.getUserSituation = function(timestamp, success, error) {
 exports.simulateAnEvent = function(success, error) {
     exec(success, error, "neura", "simulateAnEvent", []);
 };
+
+exports.isLoggedIn = function(success, error) {
+    exec(success, error, "neura", "isLoggedIn", []);
+};
+
+exports.registerFirebaseToken = function(token, success, error) {
+    exec(success, error, "neura", "registerFirebaseToken", [token]);
+};
+
+exports.getUserPlaceByLabelType = function(placeLabelType, success, error) {
+    exec(success, error, "neura", "getUserPlaceByLabelType", [placeLabelType]);
+};
+
+exports.getDailySummary = function(timestamp, success, error) {
+    exec(success, error, "neura", "getDailySummary", [timestamp]);
+};
+
+exports.getSleepProfile = function(startTimestamp, endTimestamp, success, error) {
+    exec(success, error, "neura", "getSleepProfile", [startTimestamp, endTimestamp]);
+};

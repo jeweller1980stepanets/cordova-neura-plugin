@@ -16,6 +16,11 @@ import com.neura.resources.device.Capability;
 import com.neura.resources.device.Device;
 import com.neura.resources.device.DevicesRequestCallback;
 import com.neura.resources.device.DevicesResponseData;
+import com.neura.resources.insights.DailySummaryCallbacks;
+import com.neura.resources.insights.DailySummaryData;
+import com.neura.resources.insights.SleepProfileCallbacks;
+import com.neura.resources.insights.SleepProfileData;
+import com.neura.resources.place.PlaceNode;
 import com.neura.resources.situation.SituationCallbacks;
 import com.neura.resources.situation.SituationData;
 import com.neura.resources.user.UserDetails;
@@ -132,6 +137,21 @@ public class neura extends CordovaPlugin {
                 return true;
             } else if (action.equals("simulateAnEvent")) {
                 this.simulateAnEvent(args, callbackContext);
+                return true;
+            } else if (action.equals("isLoggedIn")) {
+                this.isLoggedIn(args, callbackContext);
+                return true;
+            } else if (action.equals("registerFirebaseToken")) {
+                this.registerFirebaseToken(args, callbackContext);
+                return true;
+            } else if (action.equals("getUserPlaceByLabelType")) {
+                this.getUserPlaceByLabelType(args, callbackContext);
+                return true;
+            } else if (action.equals("getDailySummary")) {
+                this.getDailySummary(args, callbackContext);
+                return true;
+            } else if (action.equals("getSleepProfile")) {
+                this.getSleepProfile(args, callbackContext);
                 return true;
             }
         } catch (Exception e) {
@@ -684,6 +704,110 @@ public class neura extends CordovaPlugin {
         if (!mNeuraApiClient.simulateAnEvent()) {
             callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
         }
+    }
+
+    private void isLoggedIn(@SuppressWarnings("UnusedParameters") JSONArray args, CallbackContext callbackContext) {
+        boolean loggedIn = mNeuraApiClient.isLoggedIn();
+
+        callbackContext.success(Boolean.toString(loggedIn));
+    }
+
+    private void registerFirebaseToken(JSONArray args, CallbackContext callbackContext) {
+        try {
+            String token = args.getString(0);
+            mNeuraApiClient.registerFirebaseToken(cordova.getActivity(), token);
+
+            callbackContext.success();
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+        }
+    }
+
+    private void getUserPlaceByLabelType(JSONArray args, CallbackContext callbackContext) {
+        String placeLabelType;
+        try {
+            placeLabelType = args.getString(0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+
+            return;
+        }
+
+        ArrayList<PlaceNode> places = mNeuraApiClient.getUserPlaceByLabelType(placeLabelType);
+        JSONArray placesJsonArray = new JSONArray();
+        if (places != null) {
+            for (PlaceNode currPlaceNode : places) {
+                placesJsonArray.put(currPlaceNode.getAddress());
+            }
+        }
+
+        callbackContext.success(placesJsonArray);
+    }
+
+    private void getDailySummary(JSONArray args, final CallbackContext callbackContext) {
+        if (args == null) {
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+            return;
+        }
+
+        long timestamp;
+
+        try {
+            timestamp = args.getLong(0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+            return;
+        }
+
+        mNeuraApiClient.getDailySummary(timestamp, new DailySummaryCallbacks() {
+            @Override
+            public void onSuccess(DailySummaryData situationData) {
+                callbackContext.success(situationData.toString());
+            }
+
+            @Override
+            public void onFailure(Bundle bundle, int errorCode) {
+                callbackContext.error(errorCode);
+            }
+        });
+    }
+
+    private void getSleepProfile(JSONArray args, final CallbackContext callbackContext) {
+        if (args == null) {
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+            return;
+        }
+
+        long startTimestamp;
+        long endTimestamp;
+
+        try {
+            startTimestamp = args.getLong(0);
+            endTimestamp = args.getLong(1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+            return;
+        }
+
+        mNeuraApiClient.getSleepProfile(startTimestamp, endTimestamp, new SleepProfileCallbacks() {
+            @Override
+            public void onSuccess(SleepProfileData situationData) {
+                callbackContext.success(situationData.toString());
+            }
+
+            @Override
+            public void onFailure(Bundle bundle, int errorCode) {
+                callbackContext.error(errorCode);
+            }
+        });
     }
 
     private ArrayList<Permission> getPermissionsArrayList(JSONArray permissions) throws JSONException {
