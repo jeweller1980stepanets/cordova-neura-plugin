@@ -768,7 +768,7 @@ public class neura extends CordovaPlugin {
         mNeuraApiClient.getDailySummary(timestamp, new DailySummaryCallbacks() {
             @Override
             public void onSuccess(DailySummaryData situationData) {
-                callbackContext.success(situationData.toString());
+                callbackContext.success(situationData.toJson());
             }
 
             @Override
@@ -800,7 +800,7 @@ public class neura extends CordovaPlugin {
         mNeuraApiClient.getSleepProfile(startTimestamp, endTimestamp, new SleepProfileCallbacks() {
             @Override
             public void onSuccess(SleepProfileData situationData) {
-                callbackContext.success(situationData.toString());
+                callbackContext.success(situationData.toJson());
             }
 
             @Override
