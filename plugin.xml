@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-neura" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="cordova-plugin-neura" version="0.0.2" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 	<name>neura</name>
 	<js-module name="neura" src="www/neura.js">
 		<clobbers target="neura" />
@@ -12,21 +12,21 @@
 		</config-file>
 		<config-file parent="/*" target="AndroidManifest.xml"/>
 		<source-file src="src/android/neura.java" target-dir="src/com/neura/cordova/plugin" />
-		
-<framework src="com.theneura:android-sdk:+" />
+
+		<framework src="com.theneura:android-sdk:+" />
 	</platform>
-    <platform name="ios">
-        <config-file target="config.xml" parent="/*">
-            <feature name="neura">
-                <param name="ios-package" value="neura" />
-                <param name="onload" value="true" />
-            </feature>
-        </config-file>
-        <header-file src="src/ios/NeuraSdkPlugin.h" />
-        <source-file src="src/ios/NeuraSdkPlugin.m" />
-        <header-file src="src/ios/AppDelegate+NeuraNotification.h" />
-        <source-file src="src/ios/AppDelegate+NeuraNotification.m" />
-        <framework src="NeuraSDK.framework" custom="true" embed="true"/>
-        <hook type="after_build" src="hooks/addEmbedded.js" />
-    </platform>
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="neura">
+        <param name="ios-package" value="neura" />
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+    <header-file src="src/ios/NeuraSdkPlugin.h" />
+    <source-file src="src/ios/NeuraSdkPlugin.m" />
+    <header-file src="src/ios/AppDelegate+NeuraNotification.h" />
+    <source-file src="src/ios/AppDelegate+NeuraNotification.m" />
+    <framework src="NeuraSDK.framework" custom="true" embed="true"/>
+    <hook type="after_build" src="hooks/addEmbedded.js" />
+  </platform>
 </plugin>
