@@ -1,6 +1,6 @@
 {
   "name": "neura",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Cordova Neura Plugin",
   "cordova": {
     "id": "cordova-plugin-neura",
