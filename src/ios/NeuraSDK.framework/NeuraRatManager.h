@@ -1,0 +1,15 @@
+//
+//  NeuraRatManager.h
+//  Neura.me
+//
+//  Created by MIchael on 4/30/15.
+//  Copyright (c) 2015 Neura. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface NeuraRatManager : NSObject
+
+- (void)startCycle;
+
+@end

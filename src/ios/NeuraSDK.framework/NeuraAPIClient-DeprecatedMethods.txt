@@ -1,0 +1,17 @@
+Deprecated methods in .h file:
++ (void)getUserMetric:(NAPICompletionHandler)block;
++ (void)getUserDataWithCompletion:(NAPICompletionHandler)block;
++ (void)changePassword:(NSString *)password completion:(NAPICompletionHandler)block;
++ (void)changeUserMetric:(NSInteger)newMetric completion:(NAPICompletionHandler)block;
++ (void)forgotPasswordWithEmail:(NSString *)email completion:(NAPICompletionHandler)block;
++ (void)socialLoginWithParams:(NSDictionary *)params completion:(NAPICompletionHandler)block;
++ (void)sendBluetoothData:(NSArray *)devices completion:(NAPICompletionHandler)block;
++ (void)sendGeoData:(NSArray *)locations withActivityData:(NSArray *)activities completion:(NAPICompletionHandler)block;
++ (void)sendGeoData:(NSArray *)locations withActivityData:(NSArray *)activities WithStepCounter:(NSArray *)steps completion:(NAPICompletionHandler)block;
++ (void)sendNetworkData:(NSArray *)networks completion:(NAPICompletionHandler)block;
++ (void)sendInnerNetworkData:(NSArray *)networkDevices completion:(NAPICompletionHandler)block;
++ (void)deletePermissionsWithcompletion:(NAPICompletionHandler)block;
++ (void)getUserSuggestionsWithCompletion:(NAPICompletionHandler)block;
++ (void)updateSuggestion:(NSString *)suggestionId status:(NeuraSuggestionStatusUpdate)status completion:(NAPICompletionHandler)block;
+
+Deprecated implementations:

@@ -1,0 +1,193 @@
+{
+	"version":"iOS_1.0.4",
+	"classifierWeights": [{
+		"classifierName": "ClassifierActivityRecognition",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierCharging",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierCommuteDetector",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierConnectedRouter",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierGeologs",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierSatellites",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierVisibleAccessPoints",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierVisit",
+		"classifierWeight": 0.0
+	},
+	{
+		"classifierName": "ClassifierAdina",
+		"classifierWeight": 1.0
+	}],
+	"classifiersConfig": [{
+		"classifierName": "ClassifierAdina",
+		"classifierConfig": {
+			"prototypes": [
+			{
+				"prototypeName": "isConnectedToNetwork",
+				"prototypeInfo": {
+					"atPlace": 1,
+					"atCasualPlace": 1,
+					"driving": 0,
+					"walking": 0,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "isChargedNum",
+				"prototypeInfo": {
+					"atPlace": 1,
+					"atCasualPlace": 0,
+					"driving": 1,
+					"walking": 0,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "isActiveVisit",
+				"prototypeInfo": {
+					"atPlace": 1,
+					"atCasualPlace": 0,
+					"driving": 0,
+					"walking": 0,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "recentlyInVehicle",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 0,
+					"driving": 1,
+					"walking": 0,
+					"weight": 2
+				}
+			},
+			{
+				"prototypeName": "recentlyOnFoot",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 1,
+					"driving": 0,
+					"walking": 1,
+					"weight": 2
+				}
+			},
+			{
+				"prototypeName": "anyMovementFromLastLocation",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 0,
+					"driving": 1,
+					"walking": 1,
+					"weight": 2
+				}
+			},
+			{
+				"prototypeName": "isAtStableLocation",
+				"prototypeInfo": {
+					"atPlace": 1,
+					"atCasualPlace": 0,
+					"driving": 0,
+					"walking": 0,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "binned_distanceFromLastKnownLocation",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 0,
+					"driving": 2,
+					"walking": 1,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "binned_avgSpeedSinceLastKnownLocation",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 0,
+					"driving": 2,
+					"walking": 1,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "binned_cumulativeSpeedFromStableLocation",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 0,
+					"driving": 2,
+					"walking": 1,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "binned_cumulativeDistanceFromStableLocation",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 0,
+					"driving": 2,
+					"walking": 1,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "binned_consecutiveStillTime",
+				"prototypeInfo": {
+					"atPlace": 2,
+					"atCasualPlace": 1,
+					"driving": 0,
+					"walking": 0,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "binned_timeSinceMovedLocation",
+				"prototypeInfo": {
+					"atPlace": 2,
+					"atCasualPlace": 1,
+					"driving": 0,
+					"walking": 0,
+					"weight": 1
+				}
+			},
+			{
+				"prototypeName": "binned_StepsPerMinute",
+				"prototypeInfo": {
+					"atPlace": 0,
+					"atCasualPlace": 0,
+					"driving": 0,
+					"walking": 1,
+					"weight": 1
+				}
+			}],
+			"bin_steps_per_minute": "80",
+			"partialRowFeatures": ["isConnectedToNetwork",
+			"isChargedNum",
+			"isActiveVisit",
+			"recentlyInVehicle",
+			"recentlyOnFoot",
+			"binned_consecutiveStillTime",
+			"binned_StepsPerMinute"]
+		}
+	}]
+}
