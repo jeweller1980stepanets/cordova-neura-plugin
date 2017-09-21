@@ -41,12 +41,12 @@ NSString * const kName                          = @"name";
 - (void) logStringFromMethod:(NSString *)methodName withFormat:(NSString *)format, ... {
     va_list argumentList;
     va_start(argumentList, format);
-
+    
 #ifdef NEURA_SDK_PLUGIN_LOG_ENABLED
     NSString *message = [NSString stringWithFormat:@"#### NEURA_IOS_PLUGIN #### - [%@] - %@", methodName, [[NSString alloc] initWithFormat:format arguments:argumentList]];
     NSLog(@"%@", message);
 #endif //NEURA_SDK_PLUGIN_LOG_ENABLED
-
+    
     va_end(argumentList);
 }
 
@@ -68,36 +68,34 @@ NSString * const kName                          = @"name";
 - (void)init:(CDVInvokedUrlCommand*)command
 {
     [self logCalledApi:NSStringFromSelector(_cmd)];
-
+    
     CDVPluginResult* pluginResult = nil;
-
+    
     NSDictionary *paramsDict = [command argumentAtIndex:0 withDefault:[NSDictionary dictionary] andClass:[NSDictionary class]];
     if(paramsDict.count == 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsNSInteger:kNeuraSdkError_Invalid_Arguments] ;
         return;
     }
-
+    
     // Check appUid and appSecret
     NSString *appId = [paramsDict objectForKey:kAppUid];
     NSString *appSecret = [paramsDict objectForKey:kAppSecret];
-
+    
     if(appId.length == 0 || appSecret.length == 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsNSInteger:kNeuraSdkError_Invalid_Arguments] ;
         return;
     }
-
+    
     [[NeuraSDK sharedInstance] setAppUID:appId];
     [[NeuraSDK sharedInstance] setAppSecret:appSecret];
-
+    
     // Check for 'ios' specific section
     NSDictionary *iosSectionDict = [paramsDict objectForKey:kIos];
     if(iosSectionDict.count > 0) {
         // Check automatic push
         NSNumber *automaticPush = [iosSectionDict objectForKey:kAutomaticPush];
-        if([automaticPush boolValue]) {
-            [NeuraSDKPushNotification enableAutomaticPushNotification];
-        }
-
+        
+        
         // Check features
         NSArray *features = [iosSectionDict objectForKey:kFeatures];
         for (NSString *feature in features) {
@@ -110,54 +108,54 @@ NSString * const kName                          = @"name";
             }
         }
     }
-
+    
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 }
 
 - (void)authenticate:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     __block CDVPluginResult* pluginResult = nil;
-
+    
     NSDictionary *paramsDictionary = nil;
     if(command.arguments.count > 0) {
-
+        
         // The parameter is a dictionary that contains 'permissions' list and optional parameters like 'phone' number (phone injection) and other additional (future usage) params.
         id param = [command.arguments objectAtIndex:0];
         if([param isKindOfClass:[NSDictionary class]]) {
-
+            
             NSDictionary *dict = (NSDictionary*)param;
-
+            
             id phoneNumber = [dict objectForKey:kPhone];
             if([phoneNumber isKindOfClass:[NSString class]] && [phoneNumber length] > 0) {
                 paramsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:phoneNumber, kPhone, nil];
             }
         }
     }
-
+    
     UIViewController *topViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topViewController.presentedViewController) {
         topViewController = topViewController.presentedViewController;
     }
-
+    
     NeuraAuthenticationRequest* authRequest = [[NeuraAuthenticationRequest alloc] initWithController:topViewController];
     [[NeuraSDK sharedInstance] authenticateWithRequest:authRequest callback:^(NeuraAuthenticationResult * _Nonnull result) {
-                                                    if (result.token) {
-                                                        [self logStringFromMethod:NSStringFromSelector(_cmd)
-                                                                       withFormat:@"Neura authentication completed successfully - token: [%@]", result.token];
-                                                        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:result.token];
-
-                                                    } else {
-                                                        [self logStringFromMethod:NSStringFromSelector(_cmd)
-                                                                       withFormat:@"Neura authentication failed - error: [%@]", result.errorString];
-                                                        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:result.errorString];
-                                                    }
-                                                    [self.commandDelegate sendPluginResult:pluginResult
-                                                                                callbackId:command.callbackId];
-                                                }];
-
+        if (result.success) {
+            [self logStringFromMethod:NSStringFromSelector(_cmd)
+                           withFormat:@"Neura authentication completed successfully - token: [%@]", result.success];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"success"];
+            
+        } else {
+            [self logStringFromMethod:NSStringFromSelector(_cmd)
+                           withFormat:@"Neura authentication failed - error: [%@]", result.errorString];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:result.errorString];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult
+                                    callbackId:command.callbackId];
+    }];
+    
 }
 
 - (void)registerPushServerApiKey:(CDVInvokedUrlCommand*)command {
@@ -165,38 +163,38 @@ NSString * const kName                          = @"name";
 }
 
 - (void)forgetMe:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     CDVPluginResult* pluginResult = nil;
     NSNumber *showConfirmation = [command.arguments objectAtIndex:0];
     if([showConfirmation boolValue]) {
-
+        
         // TODO: Implement confirmation dialog
         [self logStringFromMethod:NSStringFromSelector(_cmd)
                        withFormat:kConfirmationDialogUnsupported];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:kConfirmationDialogUnsupported];
     } else {
-
+        
         [[NeuraSDK sharedInstance] logoutWithCallback:^(NeuraLogoutResult * _Nonnull result) {
             if (result.success) {
                 [self logStringFromMethod:NSStringFromSelector(_cmd)
                                withFormat:@"Neura logout success"];
             } else {
                 [self logStringFromMethod:NSStringFromSelector(_cmd)
-                           withFormat:@"Neura logout failed - error: [%@]", result.errorString];
+                               withFormat:@"Neura logout failed - error: [%@]", result.errorString];
             }
         }];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
-
+    
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
 - (void)getSubscriptions:(CDVInvokedUrlCommand *)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
-
+    
     [[NeuraSDK sharedInstance]  getSubscriptionsListWithCallback:^(NeuraSubscriptionsListResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
         if (result.success) {
@@ -209,20 +207,20 @@ NSString * const kName                          = @"name";
 }
 
 - (void)subscribeToEvent:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     __block CDVPluginResult* pluginResult = nil;
-
+    
     NSString *eventName = [command argumentAtIndex:0 withDefault:@"" andClass:[NSString class]];
     NSString *eventId = [command argumentAtIndex:1 withDefault:@"" andClass:[NSString class]];
-
+    
     if(eventName.length == 0 || eventId.length == 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsNSInteger:kNeuraSdkError_Invalid_Arguments];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
-    NSubscription* event = [[NSubscription alloc] initWithEventName:eventName identifier:eventId];
+    
+    NSubscription* event = [[NSubscription alloc] initWithEventName:eventName webhookId:eventId];
     [[NeuraSDK sharedInstance] addSubscription:event callback:^(NeuraAddSubscriptionResult * _Nonnull result) {
         if(result.success) {
             [self logStringFromMethod:NSStringFromSelector(_cmd)
@@ -236,20 +234,21 @@ NSString * const kName                          = @"name";
 }
 
 - (void)removeSubscription:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     __block CDVPluginResult* pluginResult = nil;
-
+    
     NSString *eventName = [command argumentAtIndex:0 withDefault:@"" andClass:[NSString class]];
     NSString *eventId = [command argumentAtIndex:1 withDefault:@"" andClass:[NSString class]];
-
+    
     if(eventName.length == 0 || eventId.length == 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsNSInteger:kNeuraSdkError_Invalid_Arguments];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
-    NSubscription* event = [[NSubscription alloc] initWithEventName:eventName identifier:eventId];
+    
+    NSubscription* event = [[NSubscription alloc] initWithEventName:eventName webhookId:eventId
+                            ];
     [[NeuraSDK sharedInstance] removeSubscription:event callback:^(NeuraAPIResult * _Nonnull result) {
         if(result.success) {
             [self logStringFromMethod:NSStringFromSelector(_cmd)
@@ -267,7 +266,7 @@ NSString * const kName                          = @"name";
 }
 
 - (void)getAppPermissions:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     [[NeuraSDK sharedInstance] getAppPermissionsListWithCallback:^(NeuraPermissionsListResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
@@ -276,7 +275,7 @@ NSString * const kName                          = @"name";
         } else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:result.errorString];
         }
-
+        
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -298,7 +297,7 @@ NSString * const kName                          = @"name";
 }
 
 - (void)getSdkVersion:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     NSString *sdkVersion = [[NeuraSDK sharedInstance] getVersion];
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:sdkVersion];
@@ -306,7 +305,7 @@ NSString * const kName                          = @"name";
 }
 
 - (void)isMissingDataForEvent:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     CDVPluginResult* pluginResult = nil;
     NSString *eventName = [command argumentAtIndex:0 withDefault:@"" andClass:[NSString class]];
@@ -315,14 +314,14 @@ NSString * const kName                          = @"name";
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    
     BOOL bMissingData = [[NeuraSDK sharedInstance] isMissingDataForEvent:eventName];
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:bMissingData];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)getMissingDataForEvent:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     __block CDVPluginResult* pluginResult = nil;
     NSString *eventName = [command argumentAtIndex:0 withDefault:@"" andClass:[NSString class]];
@@ -331,29 +330,29 @@ NSString * const kName                          = @"name";
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    
     if(!([[NeuraSDK sharedInstance] isMissingDataForEvent:eventName])) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    
     [[NeuraSDK sharedInstance] getMissingDataForEvent:eventName withCallback:^(NeuraAPIResult * _Nonnull result) {
-                                              if(result.success) {
-                                                  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
-                                              } else {
-                                                  [self logStringFromMethod:NSStringFromSelector(_cmd)
-                                                                 withFormat:@"getMissingDataForEvent, Error:[%@]", result.errorString];
-                                                  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:result.errorString];
-                                              }
-
-                                              [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-                                          }];
+        if(result.success) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
+        } else {
+            [self logStringFromMethod:NSStringFromSelector(_cmd)
+                           withFormat:@"getMissingDataForEvent, Error:[%@]", result.errorString];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:result.errorString];
+        }
+        
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
 }
 
 
 - (void)getKnownDevices:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     [[NeuraSDK sharedInstance] getSupportedDevicesListWithCallback:^(NeuraSupportedDevicesListResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
@@ -367,7 +366,7 @@ NSString * const kName                          = @"name";
 }
 
 - (void)getKnownCapabilities:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     [[NeuraSDK sharedInstance] getSupportedCapabilitiesListWithCallback:^(NeuraSupportedCapabilitiesListResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
@@ -381,7 +380,7 @@ NSString * const kName                          = @"name";
 }
 
 - (void)hasDeviceWithCapability:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     __block CDVPluginResult* pluginResult = nil;
     NSString *capabilityName = [command argumentAtIndex:0 withDefault:@"" andClass:[NSString class]];
@@ -403,11 +402,11 @@ NSString * const kName                          = @"name";
 }
 
 - (void)addDevice:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
     [[NeuraSDK sharedInstance] addDeviceWithCallback:^(NeuraAddDeviceResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
-
+        
         if(result.success) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
         } else {
@@ -420,9 +419,9 @@ NSString * const kName                          = @"name";
 }
 
 - (void)addDeviceByCapabilities:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
-
+    
     __block CDVPluginResult* pluginResult = nil;
     if(command.arguments.count != 1) {
         if(command.arguments.count == 0) {
@@ -433,17 +432,17 @@ NSString * const kName                          = @"name";
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    
     NSString *capability = [command argumentAtIndex:0 withDefault:@"" andClass:[NSString class]];
     if([capability isEqualToString:@""]) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsNSInteger:kNeuraSdkError_Invalid_Arguments];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    
     [[NeuraSDK sharedInstance] addDeviceWithCapabilityNamed:capability withCallback:^(NeuraAddDeviceResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
-
+        
         if(result.success) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
         } else {
@@ -456,9 +455,9 @@ NSString * const kName                          = @"name";
 }
 
 - (void)addDeviceByName:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
-
+    
     __block CDVPluginResult* pluginResult = nil;
     NSString *deviceName = [command argumentAtIndex:0 withDefault:@"" andClass:[NSString class]];
     if([deviceName isEqualToString:@""]) {
@@ -466,10 +465,10 @@ NSString * const kName                          = @"name";
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    
     [[NeuraSDK sharedInstance] addDeviceNamed:deviceName withCallback:^(NeuraAddDeviceResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
-
+        
         if(result.success) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
         } else {
@@ -477,31 +476,31 @@ NSString * const kName                          = @"name";
             [self logStringFromMethod:NSStringFromSelector(_cmd)
                            withFormat:@"addDeviceByName error:[%@]", result.errorString];
         }
-
+        
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
 
 
 - (void)getUserDetails:(CDVInvokedUrlCommand*)command {
-
+    
     [self handleUnsupportedApiCall:NSStringFromSelector(_cmd) withCommand:command];
 }
 
 - (void)getUserPhone:(CDVInvokedUrlCommand*)command {
-
+    
     [self handleUnsupportedApiCall:NSStringFromSelector(_cmd) withCommand:command];
 }
 
 - (void)simulateAnEvent:(CDVInvokedUrlCommand*)command {
-
+    
     [self handleUnsupportedApiCall:NSStringFromSelector(_cmd) withCommand:command];
 }
 
 - (void)getUserSituation:(CDVInvokedUrlCommand*)command {
-
+    
     [self logCalledApi:NSStringFromSelector(_cmd)];
-
+    
     __block CDVPluginResult* pluginResult = nil;
     NSNumber *timestamp = [command argumentAtIndex:0 withDefault:[NSNumber numberWithDouble:0.0] andClass:[NSNumber class]];
     if([timestamp doubleValue] == 0.0) {
@@ -509,11 +508,11 @@ NSString * const kName                          = @"name";
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    
     NSDate *dateTs = [NSDate dateWithTimeIntervalSince1970:([timestamp doubleValue]/1000.0)];
     [[NeuraSDK sharedInstance] getUserSituationForTimeStamp:dateTs contextual:NO callback:^(NeuraGetUserSituationResult * _Nonnull result) {
         CDVPluginResult* pluginResult = nil;
-
+        
         if(result.success) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES];
         } else {

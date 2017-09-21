@@ -2,7 +2,7 @@
 <plugin id="cordova-plugin-neura" version="0.0.3" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
 	<name>neura</name>
 	<js-module name="neura" src="www/neura.js">
-		<clobbers target="neura" />
+		<clobbers target="cordova.plugins.neura" />
 	</js-module>
 	<platform name="android">
 		<config-file parent="/*" target="res/xml/config.xml">
@@ -14,6 +14,12 @@
 		<source-file src="src/android/neura.java" target-dir="src/com/neura/cordova/plugin" />
 
 		<framework src="com.theneura:android-sdk:+" />
+
+		<config-file target="AndroidManifest.xml" parent="/*">
+			<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	    <uses-permission android:name="android.permisssion.ACCESS_COARSE_LOCATION" />
+		</config-file>
 	</platform>
   <platform name="ios">
     <config-file target="config.xml" parent="/*">
@@ -26,7 +32,8 @@
     <source-file src="src/ios/NeuraSdkPlugin.m" />
     <header-file src="src/ios/AppDelegate+NeuraNotification.h" />
     <source-file src="src/ios/AppDelegate+NeuraNotification.m" />
-    <framework src="NeuraSDK.framework" custom="true" embed="true"/>
+    <framework src= "libicucore.A.dylib" />
+    <framework src="src/ios/NeuraSDK.framework" custom="true" embed="true"/>
     <hook type="after_build" src="hooks/addEmbedded.js" />
   </platform>
 </plugin>

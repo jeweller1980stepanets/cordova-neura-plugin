@@ -76,3 +76,25 @@ Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the f
 12. Select appropriate signing team.
 13. If you plan on using Push Notification functionality (including NeuraSDK automatic Push Notification functionality), go to the 'Capabilities' tab of the 'NeuraSampleCordova' target and turn on 'Push Notification' capability.
 
+## Using the plugin
+
+After device is ready you must defined the main variable:
+```javascript
+var neura = window.cordova.plugins.neura;
+```
+If you using Typescript
+```javascript
+const neura = window['cordova'].plugins.neura;
+```
+
+:thumbsup: *After this you may use all method in your code.*
+
+## Methods
+
+```javascript
+neura.init(appUid, appSecret, success, error);
+neura.authenticate(permissions, phone, success, error);
+```
+> permissions - array of string ["userLeftWork", "userLeftHome", "userPhoneNumber"]
+> phone - phone number or empty string
+
