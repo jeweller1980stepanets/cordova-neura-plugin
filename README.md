@@ -40,6 +40,8 @@ Due to a fact the cordova-neura-plugin is based on NeuraSDK.framework, and the f
 	'cordova plugin add /path/to/cordova-neura-plugin/'
 9. Build cordova project (--verbose can be omitted here): 
  	'cordova build ios --verbose'
+	
+	# TODO: delete it. I added it functional to plugin.xml file
 10. Change Sample app project's Info.plist (NeuraSampleCordova-Info.plist). 
 	This can be done by altering the appropriate plist file or via xCode 'Info' tab of the 'NeuraSampleCordova' target.
 	
@@ -98,3 +100,6 @@ neura.authenticate(permissions, phone, success, error);
 > permissions - array of string ["userLeftWork", "userLeftHome", "userPhoneNumber"]
 > phone - phone number or empty string
 
+```javascript
+neura.subscribeToEvent(eventName, webHookId, neuraSendEventViaPush, success, failure);
+```
