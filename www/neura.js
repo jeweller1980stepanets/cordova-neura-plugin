@@ -16,8 +16,8 @@ module.exports = {
     getSubscriptions : function(success, error) {
         exec(success, error, "neura", "getSubscriptions", []);
     },
-    subscribeToEvent : function(eventName, eventIdentifier, neuraSendEventViaPush, success, error) {
-        exec(success, error, "neura", "subscribeToEvent", [eventName, eventIdentifier, neuraSendEventViaPush]);
+    subscribeToEvent : function(eventName, webHookId, neuraSendEventViaPush, success, error) {
+        exec(success, error, "neura", "subscribeToEvent", [eventName, webHookId, neuraSendEventViaPush]);
     },
     removeSubscription : function(eventName, eventIdentifier, neuraSendEventViaPush, success, error) {
         exec(success, error, "neura", "removeSubscription", [eventName, eventIdentifier, neuraSendEventViaPush]);
