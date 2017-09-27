@@ -4,6 +4,7 @@
 
 - (void)init:(CDVInvokedUrlCommand*)command;
 - (void)authenticate:(CDVInvokedUrlCommand*)command;
+- (void)anonymousAuthenticate:(CDVInvokedUrlCommand*)command;
 - (void)forgetMe:(CDVInvokedUrlCommand*)command;
 - (void)getSubscriptions:(CDVInvokedUrlCommand*)command;
 - (void)subscribeToEvent:(CDVInvokedUrlCommand*)command;
