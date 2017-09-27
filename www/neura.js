@@ -34,9 +34,6 @@ module.exports = {
     enableLogFile : function(enableLogFile, success, error) {
         exec(success, error, "neura", "enableLogFile", [enableLogFile]);
     },
-    enableAutomaticallySyncLogs : function(enableAutomaticallySyncLogs, success, error) {
-        exec(success, error, "neura", "enableAutomaticallySyncLogs", [enableAutomaticallySyncLogs]);
-    },
     enableNeuraHandingStateAlertMessages : function(enableNeuraHandingStateAlertMessages, success, error) {
         exec(success, error, "neura", "enableNeuraHandingStateAlertMessages", [enableNeuraHandingStateAlertMessages]);
     },
