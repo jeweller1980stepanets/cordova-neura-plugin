@@ -13,9 +13,6 @@ module.exports = {
     forgetMe : function(showAreYouSureDialog, success, error) {
         exec(success, error, "neura", "forgetMe", [showAreYouSureDialog]);
     },
-    registerPushServerApiKey : function(googleApiConsoleProjectNumber, success, error) {
-        exec(success, error, "neura", "registerPushServerApiKey", [googleApiConsoleProjectNumber]);
-    },
     getSubscriptions : function(success, error) {
         exec(success, error, "neura", "getSubscriptions", []);
     },
