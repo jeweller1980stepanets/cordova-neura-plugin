@@ -158,6 +158,43 @@ NSString * webHook = @"";
 
 }
 
+- (void)anonymousAuthenticate:(CDVInvokedUrlCommand*)command{
+    [self logCalledApi:NSStringFromSelector(_cmd)];
+    __block CDVPluginResult* pluginResult = nil;
+    
+    NSData * deviceToken = nil;
+    if(command.arguments.count > 0) {
+        
+        // The parameter is a dictionary that contains 'permissions' list and optional parameters like 'phone' number (phone injection) and other additional (future usage) params.
+        id param = [command.arguments objectAtIndex:0];
+     
+        NSDictionary *dict = (NSDictionary*)param;
+            
+        deviceToken = [dict objectForKey:@"pushToken"];
+     
+    }
+    
+    NeuraAnonymousAuthenticationRequest *request = [[NeuraAnonymousAuthenticationRequest alloc] initWithDeviceToken:deviceToken];
+    
+    // Anonymos authentication started
+    [NeuraSDK.shared authenticateWithRequest:request callback:^(NeuraAuthenticationResult *result) {
+        if (result.error) {
+            // Handle authentication errors.
+            NSLog(@"login error = %@", result.error);
+            [self logStringFromMethod:NSStringFromSelector(_cmd)
+                           withFormat:@"Neura authentication failed - error: [%@]", result.error];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"%@", result.error]];
+        } else {
+            [self logStringFromMethod:NSStringFromSelector(_cmd)
+                           withFormat:@"Neura authentication completed successfully - token: [%@]", result.success];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"success"];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult
+                                    callbackId:command.callbackId];
+        
+    }];
+}
+
 - (void)registerPushServerApiKey:(CDVInvokedUrlCommand*)command {
     [self handleUnsupportedApiCall:NSStringFromSelector(_cmd) withCommand:command];
 }
