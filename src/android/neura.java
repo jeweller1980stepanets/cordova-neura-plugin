@@ -9,8 +9,12 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.neura.resources.authentication.AnonymousAuthenticateCallBack;
+import com.neura.resources.authentication.AnonymousAuthenticateData;
+import com.neura.resources.authentication.AnonymousAuthenticationStateListener;
 import com.neura.resources.authentication.AuthenticateCallback;
 import com.neura.resources.authentication.AuthenticateData;
+import com.neura.resources.authentication.AuthenticationState;
 import com.neura.resources.data.PickerCallback;
 import com.neura.resources.device.Capability;
 import com.neura.resources.device.Device;
@@ -33,6 +37,7 @@ import com.neura.sdk.object.AuthenticationRequest;
 import com.neura.sdk.object.Permission;
 import com.neura.sdk.service.GetSubscriptionsCallbacks;
 import com.neura.sdk.service.SubscriptionRequestCallbacks;
+import com.neura.standalonesdk.events.NeuraPushCommandFactory;
 import com.neura.standalonesdk.service.NeuraApiClient;
 import com.neura.standalonesdk.util.Builder;
 import com.neura.standalonesdk.util.SDKUtils;
@@ -47,6 +52,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.neura.sdk.object.AnonymousAuthenticationRequest;
 
 public class neura extends CordovaPlugin {
     
@@ -75,7 +82,10 @@ public class neura extends CordovaPlugin {
             } else if (action.equals("authenticate")) {
                 this.authenticate(args, callbackContext);
                 return true;
-            } else if (action.equals("registerPushServerApiKey")) {
+            } else if (action.equals("anonymousAuthenticate")) {
+                this.anonymousAuthenticate(args, callbackContext);
+                return true;
+            }else if (action.equals("registerPushServerApiKey")) {
                 this.registerPushServerApiKey(args, callbackContext);
                 return true;
             } else if (action.equals("forgetMe")) {
@@ -205,80 +215,157 @@ public class neura extends CordovaPlugin {
             e.printStackTrace();
             callbackContext.error(ERROR_CODE_UNKNOWN_ERROR);
         }
-        
+        AnonymousAuthenticationStateListener silentStateListener = new AnonymousAuthenticationStateListener() {
+            @Override
+            public void onStateChanged(AuthenticationState state) {
+
+                switch (state) {
+                    case AccessTokenRequested:
+                        break;
+                    case AuthenticatedAnonymously:
+                        // successful authentication
+                        mNeuraApiClient.unregisterAuthStateListener();
+                        break;
+                    case NotAuthenticated:
+                    case FailedReceivingAccessToken:
+                        // Authentication failed indefinitely. a good opportunity to retry the authentication flow
+                        mNeuraApiClient.unregisterAuthStateListener();
+                        break;
+                    default:
+                }
+            }
+        };
+        mNeuraApiClient.registerAuthStateListener(silentStateListener);
+
     }
     
     private void authenticate(final JSONArray args, final CallbackContext callbackContext) {
-        
+
         if (args == null)
         {
             Log.e(TAG, "authenticate: args are null");
-            
+
             callbackContext.error(ERROR_CODE_INVALID_ARGS);
             return;
         }
-        
+
         JSONObject params = args.optJSONObject(0);
         if (params == null)
         {
             Log.e(TAG, "authenticate: params are null");
-            
+
             callbackContext.error(ERROR_CODE_INVALID_ARGS);
             return;
         }
-        
+
         JSONArray permissions = params.optJSONArray("permissions");
         if (permissions == null || permissions.length() == 0) {
             Log.e(TAG, "authenticate: permissions are null or empty");
-            
+
             callbackContext.error(ERROR_CODE_INVALID_ARGS);
             return;
         }
-        
+
         if (!SDKUtils.isNeuraInstalledAndLoggedIn(mInterface.getActivity(), mNeuraApiClient)) {
             AuthenticationRequest authenticationRequest = new AuthenticationRequest();
-            
+
             ArrayList<Permission> permissionsArrayList;
             try {
                 permissionsArrayList = getPermissionsArrayList(permissions);
             } catch (JSONException e) {
                 e.printStackTrace();
-                
+
                 callbackContext.error(ERROR_CODE_INVALID_ARGS);
-                
+
                 return;
             }
-            
+
             authenticationRequest.setPermissions(permissionsArrayList);
-            
+
             String phone = params.optString("phone", null);
             if (phone != null) {
                 authenticationRequest.setPhone(phone);
             }
-            
+
             Log.d(TAG, "authenticate() called with permissions = [" + permissions + "], phone = [" + phone + "]");
-            
+
             mNeuraApiClient.authenticate(authenticationRequest, new AuthenticateCallback() {
                 @Override
                 public void onSuccess(AuthenticateData authenticateData) {
                     Log.d(TAG, "authenticate.onSuccess() called with: " + "token = [" + authenticateData.getAccessToken() + "], neuraUserId = [" + authenticateData.getNeuraUserId() + "]");
-                    
+
                     callbackContext.success();
                 }
-                
+
                 @Override
                 public void onFailure(int errorCode) {
                     Log.d(TAG, "authenticate.onFailure() called with: " + "errorCode = [" + errorCode + "]");
-                    
+
                     callbackContext.error(errorCode);
                 }
             });
         } else {
             // Already authenticated. return success
             Log.d(TAG, "authenticate: Already authenticated");
-            
+
             callbackContext.success();
         }
+
+
+
+    }
+
+    private void anonymousAuthenticate(final JSONArray args, final CallbackContext callbackContext){
+
+        if (args == null)
+        {
+            Log.e(TAG, "authenticate: args are null");
+
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+            return;
+        }
+
+        JSONObject params = args.optJSONObject(0);
+        if (params == null)
+        {
+            Log.e(TAG, "authenticate: params are null");
+
+            callbackContext.error(ERROR_CODE_INVALID_ARGS);
+            return;
+        }
+
+        if (!SDKUtils.isNeuraInstalledAndLoggedIn(mInterface.getActivity(), mNeuraApiClient)) {
+            String pushToken = params.optString("pushToken", null);
+            AnonymousAuthenticationRequest request = new AnonymousAuthenticationRequest(pushToken);
+
+            mNeuraApiClient.authenticate(request, new AnonymousAuthenticateCallBack() {
+                @Override
+                public void onSuccess(AnonymousAuthenticateData authenticateData) {
+                    Log.i(getClass().getSimpleName(), "Successfully requested authentication with neura. " +
+                            "NeuraUserId = " + authenticateData.getNeuraUserId());
+                    callbackContext.success(authenticateData.toString());
+                    Log.i(TAG,String.valueOf(mNeuraApiClient.isLoggedIn()));
+                }
+
+                @Override
+                public void onFailure(int errorCode) {
+                    Log.e(getClass().getSimpleName(), "Failed to authenticate with neura. "
+                            + "Reason : " + SDKUtils.errorCodeToString(errorCode));
+                    callbackContext.error(errorCode);
+                }
+            });
+        } else {
+            // Already authenticated. return success
+            Log.d(TAG, "authenticate: Already authenticated");
+
+            callbackContext.success();
+        }
+
+
+
+
+
+
     }
     
     private void registerPushServerApiKey(JSONArray args, CallbackContext callbackContext) {
@@ -341,7 +428,7 @@ public class neura extends CordovaPlugin {
         try {
             String eventName = args.getString(0);
             String eventIdentifier = args.getString(1);
-            
+
             mNeuraApiClient.subscribeToEvent(eventName, eventIdentifier, new SubscriptionRequestCallbacks() {
                 @Override
                 public void onSuccess(String eventName, Bundle resultData, String identifier) {
@@ -831,3 +918,4 @@ public class neura extends CordovaPlugin {
         return permissionsJsonArray;
     }
 }
+
