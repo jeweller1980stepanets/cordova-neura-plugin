@@ -7,6 +7,9 @@ module.exports = {
     authenticate : function(permissions, phone, success, error) {
         exec(success, error, "neura", "authenticate", [{permissions: permissions, phone: phone}]);
     },
+    anonymousAuthenticate : function(pushToken, success, error) {
+            exec(success, error, "neura", "anonymousAuthenticate", [{pushToken:pushToken}]);
+    },
     forgetMe : function(showAreYouSureDialog, success, error) {
         exec(success, error, "neura", "forgetMe", [showAreYouSureDialog]);
     },
